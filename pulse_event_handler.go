@@ -111,7 +111,7 @@ func (h *PulseEventHandler) OnPublication(e centrifuge.PublicationEvent) {
 		return
 	}
 	for _, tx := range txs {
-		if buff, err := h.buxClient.Chainstate().QueryMAPITransaction(context.Background(), tx.ID, "mempool", 20*time.Second); err != nil {
+		if buff, err := h.buxClient.Chainstate().QueryMAPITransaction(context.Background(), tx.ID, "mempool", 10*time.Second); err != nil {
 			h.logger.Error(h.ctx, fmt.Sprintf("[PULSE Subscription] QueryTransaction error: %s", err.Error()))
 		} else if buff != nil && buff.MerkleProof != nil {
 			tx.MerkleProof = MerkleProof(*buff.MerkleProof)
