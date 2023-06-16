@@ -32,14 +32,26 @@ func (c *Client) RecordTransaction(ctx context.Context, xPubKey, txHex, draftID 
 
 	// Create the model & set the default options (gives options from client->model)
 	newOpts := c.DefaultModelOptions(append(opts, WithXPub(xPubKey), New())...)
-	transaction := newTransactionWithDraftID(
+	baseTx := newTransactionWithDraftID(
 		txHex, draftID, newOpts...,
 	)
 
 	// Ensure that we have a transaction id (created from the txHex)
-	id := transaction.GetID()
+	id := baseTx.GetID()
 	if len(id) == 0 {
 		return nil, ErrMissingTxHex
+	}
+
+	transaction := baseTx
+
+	// Get the transaction by ID
+	tx, err := getTransactionByID(
+		ctx, transaction.rawXpubKey, id, c.DefaultModelOptions()...,
+	)
+
+	if tx != nil {
+		transaction = tx
+		newOpts = c.DefaultModelOptions(append(opts, WithXPub(xPubKey))...)
 	}
 
 	// Create the lock and set the release for after the function completes
@@ -57,37 +69,39 @@ func (c *Client) RecordTransaction(ctx context.Context, xPubKey, txHex, draftID 
 	} else {
 
 		// Incoming (external/unknown) transaction (no draft id was given)
-		if len(transaction.DraftID) == 0 {
+		if len(baseTx.DraftID) == 0 {
 
 			// Process & save the model
 			incomingTx := newIncomingTransaction(
-				transaction.ID, txHex, newOpts...,
+				transaction.ID, txHex, c.DefaultModelOptions(append(opts, WithXPub(xPubKey), New())...)...,
 			)
 			if err = incomingTx.Save(ctx); err != nil {
 				return nil, err
 			}
 
-			// Create the sync transaction model
-			sync := newSyncTransaction(
-				transaction.GetID(),
-				transaction.Client().DefaultSyncConfig(),
-				transaction.GetOptions(true)...,
-			)
+			syncTx, err := GetSyncTransactionByID(ctx, transaction.ID, transaction.client.DefaultModelOptions()...)
+			if syncTx == nil {
+				// Create the sync transaction model
+				sync := newSyncTransaction(
+					transaction.GetID(),
+					transaction.Client().DefaultSyncConfig(),
+					transaction.GetOptions(true)...,
+				)
 
-			// Skip broadcasting and skip P2P (incoming tx should have been broadcasted already)
-			sync.BroadcastStatus = SyncStatusSkipped // todo: this is an assumption
-			sync.P2PStatus = SyncStatusSkipped       // The owner of the Tx should have already notified paymail providers
+				// Skip broadcasting and skip P2P (incoming tx should have been broadcasted already)
+				sync.BroadcastStatus = SyncStatusSkipped // todo: this is an assumption
+				sync.P2PStatus = SyncStatusSkipped       // The owner of the Tx should have already notified paymail providers
 
-			// Use the same metadata
-			sync.Metadata = transaction.Metadata
+				// Use the same metadata
+				sync.Metadata = transaction.Metadata
 
-			// If all the options are skipped, do not make a new model (ignore the record)
-			if !sync.isSkipped() {
-				if err = sync.Save(ctx); err != nil {
-					return nil, err
+				// If all the options are skipped, do not make a new model (ignore the record)
+				if !sync.isSkipped() {
+					if err = sync.Save(ctx); err != nil {
+						return nil, err
+					}
 				}
 			}
-
 			// Added to queue
 			return newTransactionFromIncomingTransaction(incomingTx), nil
 		}
