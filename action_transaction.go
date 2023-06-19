@@ -32,17 +32,10 @@ func (c *Client) RecordTransaction(ctx context.Context, xPubKey, txHex, draftID 
 
 	// Create the model & set the default options (gives options from client->model)
 	newOpts := c.DefaultModelOptions(append(opts, WithXPub(xPubKey), New())...)
-	baseTx := newTransactionWithDraftID(
+	transaction := newTransactionWithDraftID(
 		txHex, draftID, newOpts...,
 	)
-
-	// Ensure that we have a transaction id (created from the txHex)
-	id := baseTx.GetID()
-	if len(id) == 0 {
-		return nil, ErrMissingTxHex
-	}
-
-	transaction := baseTx
+	id := transaction.GetID()
 
 	// Get the transaction by ID
 	tx, err := getTransactionByID(
@@ -69,11 +62,11 @@ func (c *Client) RecordTransaction(ctx context.Context, xPubKey, txHex, draftID 
 	} else {
 
 		// Incoming (external/unknown) transaction (no draft id was given)
-		if len(baseTx.DraftID) == 0 {
+		if len(transaction.DraftID) == 0 {
 
 			// Process & save the model
 			incomingTx := newIncomingTransaction(
-				transaction.ID, txHex, c.DefaultModelOptions(append(opts, WithXPub(xPubKey), New())...)...,
+				transaction.ID, txHex, newOpts...,
 			)
 			if err = incomingTx.Save(ctx); err != nil {
 				return nil, err
