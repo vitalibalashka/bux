@@ -35,16 +35,11 @@ func (c *Client) RecordTransaction(ctx context.Context, xPubKey, txHex, draftID 
 	transaction := newTransactionWithDraftID(
 		txHex, draftID, newOpts...,
 	)
+
+	// Ensure that we have a transaction id (created from the txHex)
 	id := transaction.GetID()
-
-	// Get the transaction by ID
-	tx, err := getTransactionByID(
-		ctx, transaction.rawXpubKey, id, c.DefaultModelOptions()...,
-	)
-
-	if tx != nil {
-		transaction = tx
-		newOpts = c.DefaultModelOptions(append(opts, WithXPub(xPubKey))...)
+	if len(id) == 0 {
+		return nil, ErrMissingTxHex
 	}
 
 	// Create the lock and set the release for after the function completes
@@ -72,8 +67,8 @@ func (c *Client) RecordTransaction(ctx context.Context, xPubKey, txHex, draftID 
 				return nil, err
 			}
 
-			syncTx, err := GetSyncTransactionByID(ctx, transaction.ID, transaction.client.DefaultModelOptions()...)
-			if syncTx == nil {
+			// Check if sync transaction exist. And if not, we should create it
+			if syncTx, _ := GetSyncTransactionByID(ctx, transaction.ID, transaction.client.DefaultModelOptions()...); syncTx == nil {
 				// Create the sync transaction model
 				sync := newSyncTransaction(
 					transaction.GetID(),
