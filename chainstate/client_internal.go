@@ -79,7 +79,11 @@ func (c *Client) startMinerCraft(ctx context.Context) (err error) {
 	}
 
 	// Load the quote fees
-	return c.RefreshFeeQuotes(ctx)
+	if c.isMapiFeeUnitEnabled() {
+		return c.RefreshFeeQuotes(ctx)
+	}
+
+	return nil
 }
 
 // startWhatsOnChain will start WhatsOnChain (if no custom client is found)

@@ -47,9 +47,10 @@ type (
 
 	// mAPIConfig is specific for mAPI configuration
 	mAPIConfig struct {
-		broadcastMiners []*Miner       // List of loaded miners for broadcasting
-		queryMiners     []*Miner       // List of loaded miners for querying transactions
-		feeUnit         *utils.FeeUnit // The lowest fees among all miners
+		broadcastMiners    []*Miner       // List of loaded miners for broadcasting
+		queryMiners        []*Miner       // List of loaded miners for querying transactions
+		feeUnit            *utils.FeeUnit // The lowest fees among all miners
+		mapiFeeUnitEnabled bool           // If set, feeUnit will updated with feeUnits from miner's mAPI
 	}
 
 	// Miner is the internal chainstate miner (wraps Minercraft miner with more information)
@@ -197,6 +198,10 @@ func (c *Client) QueryMiners() []*Miner {
 // FeeUnit will return feeUnit
 func (c *Client) FeeUnit() *utils.FeeUnit {
 	return c.options.config.mAPI.feeUnit
+}
+
+func (c *Client) isMapiFeeUnitEnabled() bool {
+	return c.options.config.mAPI.mapiFeeUnitEnabled
 }
 
 // RefreshFeeQuotes will update all fee quotes for all broadcasting miners in mAPI

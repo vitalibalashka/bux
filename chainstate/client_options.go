@@ -230,3 +230,10 @@ func WithExcludedProviders(providers []string) ClientOps {
 		}
 	}
 }
+
+// WithMapiFeeUnits will set mapiFeeUnitEnabled flag as true
+func WithMapiFeeUnits() ClientOps {
+	return func(c *clientOptions) {
+		c.config.mAPI.mapiFeeUnitEnabled = true
+	}
+}
