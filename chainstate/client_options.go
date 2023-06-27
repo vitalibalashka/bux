@@ -30,6 +30,7 @@ func defaultClientOptions() *clientOptions {
 			mAPI: &mAPIConfig{
 				broadcastMiners: bm,
 				queryMiners:     qm,
+				feeUnit:         DefaultFee,
 			},
 			minercraft:   nil,
 			network:      MainNet,
