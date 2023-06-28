@@ -66,6 +66,7 @@ type (
 // If no options are given, it will use the defaultClientOptions()
 // ctx may contain a NewRelic txn (or one will be created)
 func NewClient(ctx context.Context, opts ...ClientOps) (ClientInterface, error) {
+	
 	// Create a new client with defaults
 	client := &Client{options: defaultClientOptions()}
 
@@ -226,7 +227,7 @@ func (c *Client) RefreshFeeQuotes(ctx context.Context) error {
 			}
 
 			// Get the fee and set the fee
-			fee := quote.Quote.GetFee(minercraft.FeeTypeData) // todo: data for now, since it usually is more expensive (if different)
+			fee := quote.Quote.GetFee(minercraft.FeeTypeData)
 			if fee == nil {
 				client.options.logger.Error(ctx, fmt.Sprintf("Fee is missing in %s's FeeQuote response", miner.Miner.Name))
 				return
@@ -243,7 +244,7 @@ func (c *Client) RefreshFeeQuotes(ctx context.Context) error {
 	return nil
 }
 
-// SetLowestFees takes the smallest fees among all miners and sets them as the feeUnit for future transactions
+// SetLowestFees takes the lowest fees among all miners and sets them as the feeUnit for future transactions
 func (c *Client) SetLowestFees() {
 	minFees := DefaultFee
 	for _, m := range c.options.config.mAPI.broadcastMiners {
