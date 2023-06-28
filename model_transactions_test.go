@@ -758,7 +758,7 @@ func (ts *EmbeddedDBTestSuite) TestTransaction_Save() {
 
 		draftConfig := &TransactionConfig{
 			Outputs: []*TransactionOutput{{
-				Satoshis: 100,
+				Satoshis: 202,
 				To:       testExternalAddress,
 			}},
 		}
@@ -940,3 +940,105 @@ func TestEndToEndTransaction(t *testing.T) {
 		assert.Equal(t, uint64(12), finalTx.Fee)
 	})
 }
+
+// // TesTx_Save will test the method Save()
+// func TestTx_Save(t *testing.T) {
+
+// 	var frst *bt.Tx
+// 	frst, _ = bt.NewTxFromString(testTxHex)
+// 	fmt.Print(frst)
+
+// 	var parsedInTx *bt.Tx
+// 	parsedInTx, err := bt.NewTxFromString(testTx2Hex)
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	}
+// 	// parsedInTx.Outputs[0].Satoshis = 300773
+// 	newHash := parsedInTx
+// 	newHash.Outputs[0].Satoshis = 300773
+
+// 	t.Run("Save empty", func(t *testing.T) {
+// 		ctx, client, deferMe := CreateTestSQLiteClient(t, false, true, WithCustomTaskManager(&taskManagerMockBase{}))
+// 		defer deferMe()
+// 		_, xPub, _ := CreateNewXPub(ctx, t, client)
+// 		require.NotNil(t, xPub)
+
+// 		// NOTE: these are fake destinations, might want to replace with actual real data / methods
+
+// 		// create a fake destination for our IN transaction
+// 		ls := parsedInTx.Outputs[0].LockingScript
+// 		destination := newDestination(xPub.GetID(), ls.String(), append(client.DefaultModelOptions(), New())...)
+// 		require.NotNil(t, destination)
+
+// 		err := destination.Save(ctx)
+// 		require.NoError(t, err)
+
+// 		// add the IN transaction
+// 		transactionIn := newTransaction(testTx2Hex, append(client.DefaultModelOptions(), New())...)
+// 		require.NotNil(t, transactionIn)
+
+// 		fmt.Printf(frst.String())
+// 		err = transactionIn.Save(ctx)
+// 		require.NoError(t, err)
+
+// 		var utxoIn *Utxo
+// 		utxoIn, err = getUtxo(ctx, transactionIn.ID, 0, client.DefaultModelOptions()...)
+// 		require.NotNil(t, utxoIn)
+// 		require.NoError(t, err)
+// 		assert.Equal(t, xPub.GetID(), utxoIn.XpubID)
+// 		assert.Equal(t, bscript.ScriptTypePubKeyHash, utxoIn.Type)
+// 		assert.Equal(t, testTxInScriptPubKey, utxoIn.ScriptPubKey)
+// 		assert.Empty(t, utxoIn.SpendingTxID)
+
+// 		draftConfig := &TransactionConfig{
+// 			Outputs: []*TransactionOutput{{
+// 				Satoshis: 400,
+// 				To:       testExternalAddress,
+// 			}},
+// 		}
+// 		draftTransaction := newDraftTransaction(
+// 			xPub.rawXpubKey, draftConfig, append(client.DefaultModelOptions(), New())...,
+// 		)
+// 		// 
+// 		// draftTransaction.Configuration.FeeUnit.Satoshis = 1
+// 		// draftTransaction.Configuration.FeeUnit.Bytes = 2
+// 		err = draftTransaction.Save(ctx)
+// 		require.NoError(t, err)
+
+// 		// this transaction should spend the utxo of the IN transaction
+// 		transaction := newTransaction(testTxHex,
+// 			append(client.DefaultModelOptions(), WithXPub(xPub.rawXpubKey), New())...)
+// 		require.NotNil(t, transactionIn)
+// 		transaction.DraftID = draftTransaction.ID
+
+	
+// 		//300000
+// 		//761
+// 		//0
+
+// 		//300773
+
+// 		//new fee 12
+// 		//old fee
+// 		err = transaction.Save(ctx)
+// 		require.NoError(t, err)
+
+// 		//300892 - 300761 - 131 + 12
+
+// 		// check whether the XpubInIDs were set properly
+// 		var transaction2 *Transaction
+// 		transaction2, err = client.GetTransaction(ctx, testXPubID, testTxID)
+// 		require.NotNil(t, transaction2)
+// 		require.NoError(t, err)
+// 		assert.Equal(t, xPub.GetID(), transaction2.XpubInIDs[0])
+
+// 		// Get the utxo for the IN transaction and make sure it is marked as spent
+// 		var utxo *Utxo
+// 		utxo, err = getUtxo(ctx, transactionIn.ID, 0, client.DefaultModelOptions()...)
+// 		require.NotNil(t, transaction2)
+// 		require.NoError(t, err)
+// 		assert.Equal(t, testTxInID, utxo.ID)
+// 		assert.True(t, utxo.SpendingTxID.Valid)
+// 		assert.Equal(t, utxo.SpendingTxID.String, testTxID)
+// 	})
+// }
