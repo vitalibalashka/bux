@@ -50,7 +50,7 @@ type (
 		broadcastMiners      []*Miner       // List of loaded miners for broadcasting
 		queryMiners          []*Miner       // List of loaded miners for querying transactions
 		feeUnit              *utils.FeeUnit // The lowest fees among all miners
-		mapiFeeQuotesEnabled bool           // If set, feeUnit will updated with feeUnits from miner's mAPI
+		mapiFeeQuotesEnabled bool           // If set, feeUnit will be updated with fee quotes from miner's mAPI
 	}
 
 	// Miner is the internal chainstate miner (wraps Minercraft miner with more information)
@@ -66,7 +66,7 @@ type (
 // If no options are given, it will use the defaultClientOptions()
 // ctx may contain a NewRelic txn (or one will be created)
 func NewClient(ctx context.Context, opts ...ClientOps) (ClientInterface, error) {
-	
+
 	// Create a new client with defaults
 	client := &Client{options: defaultClientOptions()}
 
