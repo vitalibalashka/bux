@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/hex"
+	"fmt"
 	"math"
 	"math/big"
 	"time"
@@ -104,8 +105,8 @@ func getDraftTransactionID(ctx context.Context, xPubID, id string,
 
 // getDraftTransactions will get all the draft transactions with the given conditions
 func getDraftTransactions(ctx context.Context, metadata *Metadata, conditions *map[string]interface{},
-	queryParams *datastore.QueryParams, opts ...ModelOps) ([]*DraftTransaction, error) {
-
+	queryParams *datastore.QueryParams, opts ...ModelOps,
+) ([]*DraftTransaction, error) {
 	modelItems := make([]*DraftTransaction, 0)
 	if err := getModelsByConditions(ctx, ModelDraftTransaction, &modelItems, metadata, conditions, queryParams, opts...); err != nil {
 		return nil, err
@@ -159,7 +160,15 @@ func (m *DraftTransaction) processConfigOutputs(ctx context.Context) error {
 
 	// Get the client
 	c := m.Client()
-
+	// Get sender's paymail
+	paymailFrom := c.GetPaymailConfig().DefaultFromPaymail
+	conditions := map[string]interface{}{
+		xPubIDField: m.XpubID,
+	}
+	paymails, err := c.GetPaymailAddressesByXPubID(ctx, m.XpubID, nil, &conditions, nil)
+	if err == nil && len(paymails) != 0 {
+		paymailFrom = fmt.Sprintf("%s@%s", paymails[0].Alias, paymails[0].Domain)
+	}
 	// Special case where we are sending all funds to a single (address, paymail, handle)
 	if m.Configuration.SendAllTo != nil {
 		outputs := m.Configuration.Outputs
@@ -171,7 +180,7 @@ func (m *DraftTransaction) processConfigOutputs(ctx context.Context) error {
 		if err := m.Configuration.Outputs[0].processOutput(
 			ctx, c.Cachestore(),
 			c.PaymailClient(),
-			c.GetPaymailConfig().DefaultFromPaymail,
+			paymailFrom,
 			c.GetPaymailConfig().DefaultNote,
 			false,
 		); err != nil {
@@ -184,7 +193,7 @@ func (m *DraftTransaction) processConfigOutputs(ctx context.Context) error {
 			if err := output.processOutput(
 				ctx, c.Cachestore(),
 				c.PaymailClient(),
-				c.GetPaymailConfig().DefaultFromPaymail,
+				paymailFrom,
 				c.GetPaymailConfig().DefaultNote,
 				true,
 			); err != nil {
@@ -205,7 +214,7 @@ func (m *DraftTransaction) processConfigOutputs(ctx context.Context) error {
 			if err := m.Configuration.Outputs[index].processOutput(
 				ctx, c.Cachestore(),
 				c.PaymailClient(),
-				c.GetPaymailConfig().DefaultFromPaymail,
+				paymailFrom,
 				c.GetPaymailConfig().DefaultNote,
 				true,
 			); err != nil {
