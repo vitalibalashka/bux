@@ -13,15 +13,16 @@ import (
 
 // TestWithNewRelic will test the method WithNewRelic()
 func TestWithNewRelic(t *testing.T) {
-
 	t.Run("get opts", func(t *testing.T) {
 		opt := WithNewRelic()
 		assert.IsType(t, *new(ClientOps), opt)
 	})
 
 	t.Run("apply opts", func(t *testing.T) {
-		opts := []ClientOps{WithNewRelic()}
-		opts = append(opts, WithMinercraft(&MinerCraftBase{}))
+		opts := []ClientOps{
+			WithNewRelic(),
+			WithMinercraft(&MinerCraftBase{}),
+		}
 		c, err := NewClient(context.Background(), opts...)
 		require.NotNil(t, c)
 		require.NoError(t, err)
@@ -32,15 +33,16 @@ func TestWithNewRelic(t *testing.T) {
 
 // TestWithDebugging will test the method WithDebugging()
 func TestWithDebugging(t *testing.T) {
-
 	t.Run("get opts", func(t *testing.T) {
 		opt := WithDebugging()
 		assert.IsType(t, *new(ClientOps), opt)
 	})
 
 	t.Run("apply opts", func(t *testing.T) {
-		opts := []ClientOps{WithDebugging()}
-		opts = append(opts, WithMinercraft(&MinerCraftBase{}))
+		opts := []ClientOps{
+			WithDebugging(),
+			WithMinercraft(&MinerCraftBase{}),
+		}
 		c, err := NewClient(context.Background(), opts...)
 		require.NotNil(t, c)
 		require.NoError(t, err)

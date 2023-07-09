@@ -177,7 +177,7 @@ func TestClient_Broadcast(t *testing.T) {
 	t.Parallel()
 
 	t.Run("error - missing tx id", func(t *testing.T) {
-		c := NewTestClient(context.Background(), t, WithMinercraft(&MinerCraftBase{}))
+		c := NewTestClient(context.Background(), t)
 		provider, err := c.Broadcast(
 			context.Background(), "", onChainExample1TxHex, defaultBroadcastTimeOut,
 		)
@@ -187,7 +187,7 @@ func TestClient_Broadcast(t *testing.T) {
 	})
 
 	t.Run("error - missing tx hex", func(t *testing.T) {
-		c := NewTestClient(context.Background(), t, WithMinercraft(&MinerCraftBase{}),)
+		c := NewTestClient(context.Background(), t)
 		provider, err := c.Broadcast(
 			context.Background(), onChainExample1TxID, "", defaultBroadcastTimeOut,
 		)

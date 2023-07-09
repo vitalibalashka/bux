@@ -44,8 +44,6 @@ var (
 		minerGorillaPool,
 		minerMatterPool,
 	}
-
-	TestString string
 )
 
 type MinerCraftBase struct{}
@@ -667,4 +665,12 @@ func (m *minerCraftTxNotFound) QueryTransaction(_ context.Context, miner *minerc
 	}
 
 	return nil, nil
+}
+
+type minerCraftUnreachble struct {
+	MinerCraftBase
+}
+
+func (m *minerCraftUnreachble) FeeQuote(context.Context, *minercraft.Miner) (*minercraft.FeeQuoteResponse, error) {
+	return nil, errors.New("minercraft is unreachable")
 }

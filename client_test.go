@@ -4,7 +4,6 @@ import (
 	"context"
 	"testing"
 
-	"github.com/BuxOrg/bux/chainstate"
 	"github.com/BuxOrg/bux/tester"
 	"github.com/mrz1836/go-cachestore"
 	"github.com/mrz1836/go-datastore"
@@ -21,7 +20,6 @@ func TestClient_Debug(t *testing.T) {
 
 	t.Run("load basic with debug", func(t *testing.T) {
 		opts := DefaultClientOpts(false, true)
-		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 		tc, err := NewClient(
 			tester.GetNewRelicCtx(t, defaultNewRelicApp, defaultNewRelicTx),
 			opts...,
@@ -48,7 +46,6 @@ func TestClient_IsDebug(t *testing.T) {
 
 	t.Run("basic debug checks", func(t *testing.T) {
 		opts := DefaultClientOpts(false, true)
-		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 		tc, err := NewClient(
 			tester.GetNewRelicCtx(t, defaultNewRelicApp, defaultNewRelicTx),
 			opts...,
@@ -71,7 +68,6 @@ func TestClient_Version(t *testing.T) {
 
 	t.Run("check version", func(t *testing.T) {
 		opts := DefaultClientOpts(false, true)
-		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 		tc, err := NewClient(
 			tester.GetNewRelicCtx(t, defaultNewRelicApp, defaultNewRelicTx),
 			opts...,
@@ -97,7 +93,6 @@ func TestClient_Cachestore(t *testing.T) {
 
 	t.Run("valid cachestore", func(t *testing.T) {
 		opts := DefaultClientOpts(false, true)
-		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 		tc, err := NewClient(
 			context.Background(),
 			opts...,
@@ -123,7 +118,6 @@ func TestClient_Datastore(t *testing.T) {
 
 	t.Run("valid datastore", func(t *testing.T) {
 		opts := DefaultClientOpts(false, true)
-		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 		tc, err := NewClient(
 			context.Background(),
 			opts...,
@@ -149,7 +143,6 @@ func TestClient_PaymailClient(t *testing.T) {
 
 	t.Run("valid paymail client", func(t *testing.T) {
 		opts := DefaultClientOpts(false, true)
-		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 		tc, err := NewClient(
 			context.Background(),
 			opts...,
@@ -181,7 +174,6 @@ func TestClient_GetPaymailConfig(t *testing.T) {
 			defaultAddressResolutionPurpose,
 			false, false,
 		))
-		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(context.Background(), opts...)
 		require.NoError(t, err)
@@ -203,7 +195,6 @@ func TestPaymailOptions_Client(t *testing.T) {
 
 	t.Run("valid paymail client", func(t *testing.T) {
 		opts := DefaultClientOpts(false, true)
-		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 		tc, err := NewClient(
 			context.Background(),
 			opts...,
@@ -277,7 +268,6 @@ func TestPaymailOptions_ServerConfig(t *testing.T) {
 			defaultAddressResolutionPurpose,
 			false, false,
 		))
-		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(context.Background(), opts...)
 		require.NoError(t, err)

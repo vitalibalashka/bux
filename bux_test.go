@@ -68,6 +68,7 @@ func DefaultClientOpts(debug, shared bool) []ClientOps {
 		WithTaskQ(tqc, taskmanager.FactoryMemory),
 		WithSQLite(tester.SQLiteTestConfig(debug, shared)),
 		WithChainstateOptions(false, false, false, false),
+		WithMinercraft(&chainstate.MinerCraftBase{}),
 	)
 	if debug {
 		opts = append(opts, WithDebugging())
@@ -86,7 +87,6 @@ func CreateTestSQLiteClient(t *testing.T, debug, shared bool, clientOpts ...Clie
 	opts := DefaultClientOpts(debug, shared)
 	opts = append(opts, WithAutoMigrate(BaseModels...))
 	opts = append(opts, clientOpts...)
-	opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 	// Create the client
 	client, err := NewClient(ctx, opts...)
@@ -110,7 +110,6 @@ func CreateBenchmarkSQLiteClient(b *testing.B, debug, shared bool, clientOpts ..
 	opts := DefaultClientOpts(debug, shared)
 	opts = append(opts, WithAutoMigrate(BaseModels...))
 	opts = append(opts, clientOpts...)
-	opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 	// Create the client
 	client, err := NewClient(ctx, opts...)

@@ -193,7 +193,6 @@ func TestTransactionConfig_processOutput(t *testing.T) {
 	t.Run("basic paymail address resolution - valid response", func(t *testing.T) {
 		client := newTestPaymailClient(t, []string{testDomain})
 		opts := DefaultClientOpts(true, true)
-		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(
 			context.Background(),
@@ -234,7 +233,6 @@ func TestTransactionConfig_processOutput(t *testing.T) {
 
 		client := newTestPaymailClient(t, []string{testDomain, handleDomain})
 		opts := DefaultClientOpts(true, true)
-		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(
 			context.Background(),
@@ -275,7 +273,6 @@ func TestTransactionConfig_processOutput(t *testing.T) {
 
 		client := newTestPaymailClient(t, []string{testDomain, handleDomain})
 		opts := DefaultClientOpts(true, true)
-		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(
 			context.Background(),
@@ -313,7 +310,6 @@ func TestTransactionConfig_processOutput(t *testing.T) {
 	t.Run("p2p paymail address resolution - valid response", func(t *testing.T) {
 		client := newTestPaymailClient(t, []string{testDomain})
 		opts := DefaultClientOpts(true, true)
-		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(
 			context.Background(),

@@ -17,7 +17,8 @@ func TestNewClient(t *testing.T) {
 	t.Parallel()
 	t.Run("basic defaults", func(t *testing.T) {
 		c, err := NewClient(
-			context.Background(), WithMinercraft(&MinerCraftBase{}),
+			context.Background(),
+			WithMinercraft(&MinerCraftBase{}),
 		)
 		require.NoError(t, err)
 		require.NotNil(t, c)
@@ -142,5 +143,14 @@ func TestNewClient(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, c)
 		assert.Equal(t, StressTestNet, c.Network())
+	})
+
+	t.Run("unreacheble miners", func(t *testing.T) {
+		_, err := NewClient(
+			context.Background(),
+			WithMinercraft(&minerCraftUnreachble{}),
+		)
+		require.Error(t, err)
+		assert.ErrorIs(t, err, ErrMissingBroadcastMiners)
 	})
 }

@@ -13,7 +13,7 @@ func TestClient_Transaction(t *testing.T) {
 	t.Parallel()
 
 	t.Run("error - missing id", func(t *testing.T) {
-		c := NewTestClient(context.Background(), t, WithMinercraft(&MinerCraftBase{}),)
+		c := NewTestClient(context.Background(), t)
 
 		info, err := c.QueryTransaction(
 			context.Background(), "", RequiredOnChain, defaultQueryTimeOut,
@@ -24,7 +24,7 @@ func TestClient_Transaction(t *testing.T) {
 	})
 
 	t.Run("error - missing requirements", func(t *testing.T) {
-		c := NewTestClient(context.Background(), t, WithMinercraft(&MinerCraftBase{}),)
+		c := NewTestClient(context.Background(), t)
 
 		info, err := c.QueryTransaction(
 			context.Background(), onChainExample1TxID,
@@ -183,7 +183,7 @@ func TestClient_TransactionFastest(t *testing.T) {
 	t.Parallel()
 
 	t.Run("error - missing id", func(t *testing.T) {
-		c := NewTestClient(context.Background(), t, WithMinercraft(&MinerCraftBase{}),)
+		c := NewTestClient(context.Background(), t)
 
 		info, err := c.QueryTransactionFastest(
 			context.Background(), "", RequiredOnChain, defaultQueryTimeOut,
@@ -194,7 +194,7 @@ func TestClient_TransactionFastest(t *testing.T) {
 	})
 
 	t.Run("error - missing requirements", func(t *testing.T) {
-		c := NewTestClient(context.Background(), t, WithMinercraft(&MinerCraftBase{}),)
+		c := NewTestClient(context.Background(), t)
 
 		info, err := c.QueryTransactionFastest(
 			context.Background(), onChainExample1TxID,
