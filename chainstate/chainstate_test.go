@@ -23,7 +23,7 @@ func NewTestClient(ctx context.Context, t *testing.T, opts ...ClientOps) ClientI
 func TestQueryTransactionFastest(t *testing.T) {
 	t.Run("no tx ID", func(t *testing.T) {
 		ctx := context.Background()
-		c, err := NewClient(ctx)
+		c, err := NewClient(ctx, WithMinercraft(&MinerCraftBase{}))
 		require.NoError(t, err)
 
 		_, err = c.QueryTransactionFastest(ctx, "", RequiredInMempool, 5*time.Second)
@@ -32,7 +32,7 @@ func TestQueryTransactionFastest(t *testing.T) {
 
 	t.Run("fastest query", func(t *testing.T) {
 		ctx := context.Background()
-		c, err := NewClient(ctx)
+		c, err := NewClient(ctx, WithMinercraft(&MinerCraftBase{}))
 		require.NoError(t, err)
 
 		var txInfo *TransactionInfo

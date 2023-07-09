@@ -21,6 +21,7 @@ func TestWithNewRelic(t *testing.T) {
 
 	t.Run("apply opts", func(t *testing.T) {
 		opts := []ClientOps{WithNewRelic()}
+		opts = append(opts, WithMinercraft(&MinerCraftBase{}))
 		c, err := NewClient(context.Background(), opts...)
 		require.NotNil(t, c)
 		require.NoError(t, err)
@@ -39,6 +40,7 @@ func TestWithDebugging(t *testing.T) {
 
 	t.Run("apply opts", func(t *testing.T) {
 		opts := []ClientOps{WithDebugging()}
+		opts = append(opts, WithMinercraft(&MinerCraftBase{}))
 		c, err := NewClient(context.Background(), opts...)
 		require.NotNil(t, c)
 		require.NoError(t, err)

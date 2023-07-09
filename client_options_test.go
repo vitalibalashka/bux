@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/BuxOrg/bux/chainstate"
 	"github.com/BuxOrg/bux/taskmanager"
 	"github.com/BuxOrg/bux/tester"
 	"github.com/BuxOrg/bux/utils"
@@ -32,6 +33,7 @@ func Test_newRelicOptions_enable(t *testing.T) {
 
 		opts := DefaultClientOpts(false, true)
 		opts = append(opts, WithNewRelic(app))
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		var tc ClientInterface
 		tc, err = NewClient(
@@ -49,6 +51,7 @@ func Test_newRelicOptions_enable(t *testing.T) {
 	t.Run("enable with invalid app", func(t *testing.T) {
 		opts := DefaultClientOpts(false, true)
 		opts = append(opts, WithNewRelic(nil))
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(tester.GetNewRelicCtx(t, defaultNewRelicApp, defaultNewRelicTx), opts...)
 		require.NoError(t, err)
@@ -71,6 +74,7 @@ func Test_newRelicOptions_getOrStartTxn(t *testing.T) {
 
 		opts := DefaultClientOpts(false, true)
 		opts = append(opts, WithNewRelic(app))
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		var tc ClientInterface
 		tc, err = NewClient(
@@ -91,6 +95,7 @@ func Test_newRelicOptions_getOrStartTxn(t *testing.T) {
 	t.Run("invalid ctx and txn", func(t *testing.T) {
 		opts := DefaultClientOpts(false, true)
 		opts = append(opts, WithNewRelic(nil))
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(tester.GetNewRelicCtx(t, defaultNewRelicApp, defaultNewRelicTx), opts...)
 		require.NoError(t, err)
@@ -149,6 +154,7 @@ func TestWithUserAgent(t *testing.T) {
 	t.Run("empty user agent", func(t *testing.T) {
 		opts := DefaultClientOpts(false, true)
 		opts = append(opts, WithUserAgent(""))
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(tester.GetNewRelicCtx(t, defaultNewRelicApp, defaultNewRelicTx), opts...)
 		require.NoError(t, err)
@@ -164,6 +170,7 @@ func TestWithUserAgent(t *testing.T) {
 
 		opts := DefaultClientOpts(false, true)
 		opts = append(opts, WithUserAgent(customAgent))
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(tester.GetNewRelicCtx(t, defaultNewRelicApp, defaultNewRelicTx), opts...)
 		require.NoError(t, err)
@@ -195,9 +202,11 @@ func TestWithDebugging(t *testing.T) {
 	})
 
 	t.Run("set debug (with cache and Datastore)", func(t *testing.T) {
+		opts := DefaultClientOpts(true, true)
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 		tc, err := NewClient(
 			tester.GetNewRelicCtx(t, defaultNewRelicApp, defaultNewRelicTx),
-			DefaultClientOpts(true, true)...,
+			opts...,
 		)
 		require.NoError(t, err)
 		require.NotNil(t, tc)
@@ -222,6 +231,7 @@ func TestWithEncryption(t *testing.T) {
 	t.Run("empty key", func(t *testing.T) {
 		opts := DefaultClientOpts(false, true)
 		opts = append(opts, WithEncryption(""))
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(tester.GetNewRelicCtx(t, defaultNewRelicApp, defaultNewRelicTx), opts...)
 		require.NoError(t, err)
@@ -235,6 +245,7 @@ func TestWithEncryption(t *testing.T) {
 		key, _ := utils.RandomHex(32)
 		opts := DefaultClientOpts(false, true)
 		opts = append(opts, WithEncryption(key))
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(tester.GetNewRelicCtx(t, defaultNewRelicApp, defaultNewRelicTx), opts...)
 		require.NoError(t, err)
@@ -264,6 +275,7 @@ func TestWithRedis(t *testing.T) {
 				URL: cachestore.RedisPrefix + "localhost:6379",
 			}),
 			WithSQLite(tester.SQLiteTestConfig(false, true)),
+			WithMinercraft(&chainstate.MinerCraftBase{}),
 		)
 		require.NoError(t, err)
 		require.NotNil(t, tc)
@@ -286,6 +298,7 @@ func TestWithRedis(t *testing.T) {
 				URL: "localhost:6379",
 			}),
 			WithSQLite(tester.SQLiteTestConfig(false, true)),
+			WithMinercraft(&chainstate.MinerCraftBase{}),
 		)
 		require.NoError(t, err)
 		require.NotNil(t, tc)
@@ -310,6 +323,7 @@ func TestWithRedisConnection(t *testing.T) {
 			WithTaskQ(taskmanager.DefaultTaskQConfig(tester.RandomTablePrefix()), taskmanager.FactoryMemory),
 			WithRedisConnection(nil),
 			WithSQLite(tester.SQLiteTestConfig(false, true)),
+			WithMinercraft(&chainstate.MinerCraftBase{}),
 		)
 		require.NoError(t, err)
 		require.NotNil(t, tc)
@@ -330,6 +344,7 @@ func TestWithRedisConnection(t *testing.T) {
 			WithTaskQ(taskmanager.DefaultTaskQConfig(tester.RandomTablePrefix()), taskmanager.FactoryMemory),
 			WithRedisConnection(client),
 			WithSQLite(tester.SQLiteTestConfig(false, true)),
+			WithMinercraft(&chainstate.MinerCraftBase{}),
 		)
 		require.NoError(t, err)
 		require.NotNil(t, tc)
@@ -355,7 +370,8 @@ func TestWithFreeCache(t *testing.T) {
 			tester.GetNewRelicCtx(t, defaultNewRelicApp, defaultNewRelicTx),
 			WithFreeCache(),
 			WithTaskQ(taskmanager.DefaultTaskQConfig(testQueueName), taskmanager.FactoryMemory),
-			WithSQLite(&datastore.SQLiteConfig{Shared: true}))
+			WithSQLite(&datastore.SQLiteConfig{Shared: true}),
+			WithMinercraft(&chainstate.MinerCraftBase{}))
 		require.NoError(t, err)
 		require.NotNil(t, tc)
 		defer CloseClient(context.Background(), t, tc)
@@ -380,7 +396,8 @@ func TestWithFreeCacheConnection(t *testing.T) {
 			tester.GetNewRelicCtx(t, defaultNewRelicApp, defaultNewRelicTx),
 			WithFreeCacheConnection(nil),
 			WithTaskQ(taskmanager.DefaultTaskQConfig(testQueueName), taskmanager.FactoryMemory),
-			WithSQLite(&datastore.SQLiteConfig{Shared: true}))
+			WithSQLite(&datastore.SQLiteConfig{Shared: true}),
+			WithMinercraft(&chainstate.MinerCraftBase{}))
 		require.NoError(t, err)
 		require.NotNil(t, tc)
 
@@ -398,7 +415,8 @@ func TestWithFreeCacheConnection(t *testing.T) {
 			tester.GetNewRelicCtx(t, defaultNewRelicApp, defaultNewRelicTx),
 			WithFreeCacheConnection(fc),
 			WithTaskQ(taskmanager.DefaultTaskQConfig(testQueueName), taskmanager.FactoryMemory),
-			WithSQLite(&datastore.SQLiteConfig{Shared: true}))
+			WithSQLite(&datastore.SQLiteConfig{Shared: true}),
+			WithMinercraft(&chainstate.MinerCraftBase{}))
 		require.NoError(t, err)
 		require.NotNil(t, tc)
 		defer CloseClient(context.Background(), t, tc)
@@ -416,6 +434,7 @@ func TestWithPaymailClient(t *testing.T) {
 	t.Run("using a nil driver, automatically makes paymail client", func(t *testing.T) {
 		opts := DefaultClientOpts(false, true)
 		opts = append(opts, WithPaymailClient(nil))
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(tester.GetNewRelicCtx(t, defaultNewRelicApp, defaultNewRelicTx), opts...)
 		require.NoError(t, err)
@@ -432,6 +451,7 @@ func TestWithPaymailClient(t *testing.T) {
 
 		opts := DefaultClientOpts(false, true)
 		opts = append(opts, WithPaymailClient(p))
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		var tc ClientInterface
 		tc, err = NewClient(tester.GetNewRelicCtx(t, defaultNewRelicApp, defaultNewRelicTx), opts...)
@@ -451,9 +471,11 @@ func TestWithTaskQ(t *testing.T) {
 	// todo: test cases where config is nil, or cannot load TaskQ
 
 	t.Run("using taskq using memory", func(t *testing.T) {
+		opts:= DefaultClientOpts(false, true)
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 		tc, err := NewClient(
 			tester.GetNewRelicCtx(t, defaultNewRelicApp, defaultNewRelicTx),
-			DefaultClientOpts(false, true)...,
+			opts...,
 		)
 		require.NoError(t, err)
 		require.NotNil(t, tc)
@@ -482,6 +504,7 @@ func TestWithTaskQ(t *testing.T) {
 				URL: cachestore.RedisPrefix + "localhost:6379",
 			}),
 			WithSQLite(tester.SQLiteTestConfig(false, true)),
+			WithMinercraft(&chainstate.MinerCraftBase{}),
 		)
 		require.NoError(t, err)
 		require.NotNil(t, tc)
@@ -506,6 +529,7 @@ func TestWithLogger(t *testing.T) {
 	t.Run("test applying nil", func(t *testing.T) {
 		opts := DefaultClientOpts(false, true)
 		opts = append(opts, WithLogger(nil))
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(tester.GetNewRelicCtx(t, defaultNewRelicApp, defaultNewRelicTx), opts...)
 		require.NoError(t, err)
@@ -519,6 +543,7 @@ func TestWithLogger(t *testing.T) {
 		customLogger := zLogger.NewGormLogger(true, 4)
 		opts := DefaultClientOpts(false, true)
 		opts = append(opts, WithLogger(customLogger))
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(tester.GetNewRelicCtx(t, defaultNewRelicApp, defaultNewRelicTx), opts...)
 		require.NoError(t, err)
@@ -541,6 +566,7 @@ func TestWithModels(t *testing.T) {
 	t.Run("empty models - returns default models", func(t *testing.T) {
 		opts := DefaultClientOpts(false, true)
 		opts = append(opts, WithModels())
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(tester.GetNewRelicCtx(t, defaultNewRelicApp, defaultNewRelicTx), opts...)
 		require.NoError(t, err)
@@ -559,6 +585,7 @@ func TestWithModels(t *testing.T) {
 	t.Run("add custom models", func(t *testing.T) {
 		opts := DefaultClientOpts(false, true)
 		opts = append(opts, WithModels(newPaymail(testPaymail)))
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(tester.GetNewRelicCtx(t, defaultNewRelicApp, defaultNewRelicTx), opts...)
 		require.NoError(t, err)
@@ -586,6 +613,7 @@ func TestWithITCDisabled(t *testing.T) {
 
 	t.Run("default options", func(t *testing.T) {
 		opts := DefaultClientOpts(false, true)
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(tester.GetNewRelicCtx(t, defaultNewRelicApp, defaultNewRelicTx), opts...)
 		require.NoError(t, err)
@@ -598,6 +626,7 @@ func TestWithITCDisabled(t *testing.T) {
 	t.Run("itc disabled", func(t *testing.T) {
 		opts := DefaultClientOpts(false, true)
 		opts = append(opts, WithITCDisabled())
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(tester.GetNewRelicCtx(t, defaultNewRelicApp, defaultNewRelicTx), opts...)
 		require.NoError(t, err)
@@ -619,6 +648,7 @@ func TestWithIUCDisabled(t *testing.T) {
 
 	t.Run("default options", func(t *testing.T) {
 		opts := DefaultClientOpts(false, true)
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(tester.GetNewRelicCtx(t, defaultNewRelicApp, defaultNewRelicTx), opts...)
 		require.NoError(t, err)
@@ -631,6 +661,7 @@ func TestWithIUCDisabled(t *testing.T) {
 	t.Run("itc disabled", func(t *testing.T) {
 		opts := DefaultClientOpts(false, true)
 		opts = append(opts, WithIUCDisabled())
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(tester.GetNewRelicCtx(t, defaultNewRelicApp, defaultNewRelicTx), opts...)
 		require.NoError(t, err)
@@ -653,6 +684,7 @@ func TestWithImportBlockHeaders(t *testing.T) {
 	t.Run("empty url", func(t *testing.T) {
 		opts := DefaultClientOpts(false, true)
 		opts = append(opts, WithImportBlockHeaders(""))
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(tester.GetNewRelicCtx(t, defaultNewRelicApp, defaultNewRelicTx), opts...)
 		require.NoError(t, err)
@@ -667,6 +699,7 @@ func TestWithImportBlockHeaders(t *testing.T) {
 
 		opts := DefaultClientOpts(false, true)
 		opts = append(opts, WithImportBlockHeaders(customURL))
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(tester.GetNewRelicCtx(t, defaultNewRelicApp, defaultNewRelicTx), opts...)
 		require.NoError(t, err)
@@ -689,6 +722,7 @@ func TestWithHTTPClient(t *testing.T) {
 	t.Run("test applying nil", func(t *testing.T) {
 		opts := DefaultClientOpts(false, true)
 		opts = append(opts, WithHTTPClient(nil))
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(tester.GetNewRelicCtx(t, defaultNewRelicApp, defaultNewRelicTx), opts...)
 		require.NoError(t, err)
@@ -702,6 +736,7 @@ func TestWithHTTPClient(t *testing.T) {
 		customClient := &http.Client{}
 		opts := DefaultClientOpts(false, true)
 		opts = append(opts, WithHTTPClient(customClient))
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(tester.GetNewRelicCtx(t, defaultNewRelicApp, defaultNewRelicTx), opts...)
 		require.NoError(t, err)
@@ -724,6 +759,7 @@ func TestWithCustomCachestore(t *testing.T) {
 	t.Run("test applying nil", func(t *testing.T) {
 		opts := DefaultClientOpts(false, true)
 		opts = append(opts, WithCustomCachestore(nil))
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(tester.GetNewRelicCtx(t, defaultNewRelicApp, defaultNewRelicTx), opts...)
 		require.NoError(t, err)
@@ -739,6 +775,7 @@ func TestWithCustomCachestore(t *testing.T) {
 
 		opts := DefaultClientOpts(false, true)
 		opts = append(opts, WithCustomCachestore(customCache))
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		var tc ClientInterface
 		tc, err = NewClient(tester.GetNewRelicCtx(t, defaultNewRelicApp, defaultNewRelicTx), opts...)
@@ -762,6 +799,7 @@ func TestWithCustomDatastore(t *testing.T) {
 	t.Run("test applying nil", func(t *testing.T) {
 		opts := DefaultClientOpts(false, true)
 		opts = append(opts, WithCustomDatastore(nil))
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(tester.GetNewRelicCtx(t, defaultNewRelicApp, defaultNewRelicTx), opts...)
 		require.NoError(t, err)
@@ -777,6 +815,7 @@ func TestWithCustomDatastore(t *testing.T) {
 
 		opts := DefaultClientOpts(false, true)
 		opts = append(opts, WithCustomDatastore(customData))
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		var tc ClientInterface
 		tc, err = NewClient(tester.GetNewRelicCtx(t, defaultNewRelicApp, defaultNewRelicTx), opts...)
@@ -805,6 +844,7 @@ func TestWithAutoMigrate(t *testing.T) {
 	t.Run("no additional models, just base models", func(t *testing.T) {
 		opts := DefaultClientOpts(false, true)
 		opts = append(opts, WithAutoMigrate())
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(tester.GetNewRelicCtx(t, defaultNewRelicApp, defaultNewRelicTx), opts...)
 		require.NoError(t, err)
@@ -827,6 +867,7 @@ func TestWithAutoMigrate(t *testing.T) {
 	t.Run("one additional model", func(t *testing.T) {
 		opts := DefaultClientOpts(false, true)
 		opts = append(opts, WithAutoMigrate(newPaymail(testPaymail)))
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(tester.GetNewRelicCtx(t, defaultNewRelicApp, defaultNewRelicTx), opts...)
 		require.NoError(t, err)
@@ -859,6 +900,7 @@ func TestWithMigrationDisabled(t *testing.T) {
 
 	t.Run("default options", func(t *testing.T) {
 		opts := DefaultClientOpts(false, true)
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(tester.GetNewRelicCtx(t, defaultNewRelicApp, defaultNewRelicTx), opts...)
 		require.NoError(t, err)
@@ -871,6 +913,7 @@ func TestWithMigrationDisabled(t *testing.T) {
 	t.Run("migration disabled", func(t *testing.T) {
 		opts := DefaultClientOpts(false, true)
 		opts = append(opts, WithMigrationDisabled())
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(tester.GetNewRelicCtx(t, defaultNewRelicApp, defaultNewRelicTx), opts...)
 		require.NoError(t, err)

@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"testing"
 
+	"github.com/BuxOrg/bux/chainstate"
 	"github.com/BuxOrg/bux/taskmanager"
 	"github.com/BuxOrg/bux/tester"
 	"github.com/DATA-DOG/go-sqlmock"
@@ -85,6 +86,7 @@ func CreateTestSQLiteClient(t *testing.T, debug, shared bool, clientOpts ...Clie
 	opts := DefaultClientOpts(debug, shared)
 	opts = append(opts, WithAutoMigrate(BaseModels...))
 	opts = append(opts, clientOpts...)
+	opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 	// Create the client
 	client, err := NewClient(ctx, opts...)
@@ -108,6 +110,7 @@ func CreateBenchmarkSQLiteClient(b *testing.B, debug, shared bool, clientOpts ..
 	opts := DefaultClientOpts(debug, shared)
 	opts = append(opts, WithAutoMigrate(BaseModels...))
 	opts = append(opts, clientOpts...)
+	opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 	// Create the client
 	client, err := NewClient(ctx, opts...)

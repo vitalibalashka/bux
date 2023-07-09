@@ -15,10 +15,9 @@ import (
 // TestNewClient will test the method NewClient()
 func TestNewClient(t *testing.T) {
 	t.Parallel()
-
 	t.Run("basic defaults", func(t *testing.T) {
 		c, err := NewClient(
-			context.Background(),
+			context.Background(), WithMinercraft(&MinerCraftBase{}),
 		)
 		require.NoError(t, err)
 		require.NotNil(t, c)
@@ -34,6 +33,7 @@ func TestNewClient(t *testing.T) {
 		c, err := NewClient(
 			context.Background(),
 			WithHTTPClient(customClient),
+			WithMinercraft(&MinerCraftBase{}),
 		)
 		require.NoError(t, err)
 		require.NotNil(t, c)
@@ -49,6 +49,7 @@ func TestNewClient(t *testing.T) {
 		c, err := NewClient(
 			context.Background(),
 			WithWhatsOnChain(customClient),
+			WithMinercraft(&MinerCraftBase{}),
 		)
 		require.NoError(t, err)
 		require.NotNil(t, c)
@@ -60,6 +61,7 @@ func TestNewClient(t *testing.T) {
 		c, err := NewClient(
 			context.Background(),
 			WithWhatsOnChainAPIKey(testDummyKey),
+			WithMinercraft(&MinerCraftBase{}),
 		)
 		require.NoError(t, err)
 		require.NotNil(t, c)
@@ -89,6 +91,7 @@ func TestNewClient(t *testing.T) {
 		c, err := NewClient(
 			context.Background(),
 			WithBroadcastMiners(miners),
+			WithMinercraft(&MinerCraftBase{}),
 		)
 		require.NoError(t, err)
 		require.NotNil(t, c)
@@ -100,6 +103,7 @@ func TestNewClient(t *testing.T) {
 		c, err := NewClient(
 			context.Background(),
 			WithQueryMiners(miners),
+			WithMinercraft(&MinerCraftBase{}),
 		)
 		require.NoError(t, err)
 		require.NotNil(t, c)
@@ -111,6 +115,7 @@ func TestNewClient(t *testing.T) {
 		c, err := NewClient(
 			context.Background(),
 			WithQueryTimeout(timeout),
+			WithMinercraft(&MinerCraftBase{}),
 		)
 		require.NoError(t, err)
 		require.NotNil(t, c)
@@ -121,6 +126,7 @@ func TestNewClient(t *testing.T) {
 		c, err := NewClient(
 			context.Background(),
 			WithNetwork(TestNet),
+			WithMinercraft(&MinerCraftBase{}),
 		)
 		require.NoError(t, err)
 		require.NotNil(t, c)
@@ -131,6 +137,7 @@ func TestNewClient(t *testing.T) {
 		c, err := NewClient(
 			context.Background(),
 			WithNetwork(StressTestNet),
+			WithMinercraft(&MinerCraftBase{}),
 		)
 		require.NoError(t, err)
 		require.NotNil(t, c)

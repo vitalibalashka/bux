@@ -192,10 +192,12 @@ func TestTransactionConfig_processOutput(t *testing.T) {
 
 	t.Run("basic paymail address resolution - valid response", func(t *testing.T) {
 		client := newTestPaymailClient(t, []string{testDomain})
+		opts := DefaultClientOpts(true, true)
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(
 			context.Background(),
-			DefaultClientOpts(true, true)...,
+			opts...,
 		)
 		require.NoError(t, err)
 		require.NotNil(t, tc)
@@ -231,10 +233,12 @@ func TestTransactionConfig_processOutput(t *testing.T) {
 		handleDomain := "handcash.io"
 
 		client := newTestPaymailClient(t, []string{testDomain, handleDomain})
+		opts := DefaultClientOpts(true, true)
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(
 			context.Background(),
-			DefaultClientOpts(true, true)...,
+			opts...,
 		)
 		require.NoError(t, err)
 		require.NotNil(t, tc)
@@ -270,10 +274,12 @@ func TestTransactionConfig_processOutput(t *testing.T) {
 		handleDomain := "relayx.io"
 
 		client := newTestPaymailClient(t, []string{testDomain, handleDomain})
+		opts := DefaultClientOpts(true, true)
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(
 			context.Background(),
-			DefaultClientOpts(true, true)...,
+			opts...,
 		)
 		require.NoError(t, err)
 		require.NotNil(t, tc)
@@ -306,10 +312,12 @@ func TestTransactionConfig_processOutput(t *testing.T) {
 
 	t.Run("p2p paymail address resolution - valid response", func(t *testing.T) {
 		client := newTestPaymailClient(t, []string{testDomain})
+		opts := DefaultClientOpts(true, true)
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(
 			context.Background(),
-			DefaultClientOpts(true, true)...,
+			opts...,
 		)
 		require.NoError(t, err)
 		require.NotNil(t, tc)

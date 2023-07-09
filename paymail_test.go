@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/BuxOrg/bux/chainstate"
 	"github.com/BuxOrg/bux/taskmanager"
 	xtester "github.com/BuxOrg/bux/tester"
 	"github.com/jarcoal/httpmock"
@@ -192,6 +193,7 @@ func Test_getCapabilities(t *testing.T) {
 			WithSQLite(&datastore.SQLiteConfig{Shared: true}),
 			WithChainstateOptions(false, false, false, false),
 			WithDebugging(),
+			WithMinercraft(&chainstate.MinerCraftBase{}),
 		)
 		require.NoError(t, err)
 		require.NotNil(t, tc)
@@ -231,6 +233,7 @@ func Test_getCapabilities(t *testing.T) {
 			WithSQLite(&datastore.SQLiteConfig{Shared: true}),
 			WithChainstateOptions(false, false, false, false),
 			WithDebugging(),
+			WithMinercraft(&chainstate.MinerCraftBase{}),
 		)
 		require.NoError(t, err)
 		require.NotNil(t, tc)
@@ -254,10 +257,12 @@ func Test_getCapabilities(t *testing.T) {
 
 	t.Run("valid response - no cache found", func(t *testing.T) {
 		client := newTestPaymailClient(t, []string{testDomain})
+		opts := DefaultClientOpts(true, true)
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(
 			context.Background(),
-			DefaultClientOpts(true, true)...,
+			opts...,
 		)
 		require.NoError(t, err)
 		require.NotNil(t, tc)
@@ -279,10 +284,12 @@ func Test_getCapabilities(t *testing.T) {
 
 	t.Run("multiple requests for same capabilities", func(t *testing.T) {
 		client := newTestPaymailClient(t, []string{testDomain})
+		opts := DefaultClientOpts(true, true)
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(
 			context.Background(),
-			DefaultClientOpts(true, true)...,
+			opts...,
 		)
 		require.NoError(t, err)
 		require.NotNil(t, tc)
@@ -333,6 +340,7 @@ func Test_resolvePaymailAddress(t *testing.T) {
 			WithSQLite(&datastore.SQLiteConfig{Shared: true}),
 			WithChainstateOptions(false, false, false, false),
 			WithDebugging(),
+			WithMinercraft(&chainstate.MinerCraftBase{}),
 		)
 		require.NoError(t, err)
 		require.NotNil(t, tc)
@@ -375,10 +383,12 @@ func Test_resolvePaymailAddress(t *testing.T) {
 
 	t.Run("valid response - no cache found", func(t *testing.T) {
 		client := newTestPaymailClient(t, []string{testDomain})
+		opts := DefaultClientOpts(true, true)
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(
 			context.Background(),
-			DefaultClientOpts(true, true)...,
+			opts...,
 		)
 		require.NoError(t, err)
 		require.NotNil(t, tc)
@@ -413,10 +423,12 @@ func Test_resolvePaymailAddress(t *testing.T) {
 
 	t.Run("multiple requests for same address resolution", func(t *testing.T) {
 		client := newTestPaymailClient(t, []string{testDomain})
+		opts := DefaultClientOpts(true, true)
+		opts = append(opts, WithMinercraft(&chainstate.MinerCraftBase{}))
 
 		tc, err := NewClient(
 			context.Background(),
-			DefaultClientOpts(true, true)...,
+			opts...,
 		)
 		require.NoError(t, err)
 		require.NotNil(t, tc)
