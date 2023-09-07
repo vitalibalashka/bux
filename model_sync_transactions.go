@@ -15,6 +15,7 @@ import (
 	"github.com/BuxOrg/bux/chainstate"
 	"github.com/BuxOrg/bux/notifications"
 	"github.com/BuxOrg/bux/taskmanager"
+	// "github.com/libsv/go-bc"
 	"github.com/libsv/go-bt/v2"
 	"github.com/mrz1836/go-datastore"
 	customTypes "github.com/mrz1836/go-datastore/custom_types"
@@ -642,7 +643,8 @@ func processSyncTransaction(ctx context.Context, syncTx *SyncTransaction, transa
 
 	// Find on-chain
 	var txInfo *chainstate.TransactionInfo
-	if txInfo, err = syncTx.Client().Chainstate().QueryTransactionFastest(
+	// only mAPI currently provides merkle proof, so QueryTransaction should be used here
+	if txInfo, err = syncTx.Client().Chainstate().QueryTransaction(
 		ctx, syncTx.ID, chainstate.RequiredOnChain, defaultQueryTxTimeout,
 	); err != nil {
 		if errors.Is(err, chainstate.ErrTransactionNotFound) {
@@ -670,6 +672,7 @@ func processSyncTransaction(ctx context.Context, syncTx *SyncTransaction, transa
 	// Add additional information (if found on-chain)
 	transaction.BlockHash = txInfo.BlockHash
 	transaction.BlockHeight = uint64(txInfo.BlockHeight)
+	transaction.MerkleProof = MerkleProof(*txInfo.MerkleProof)
 
 	// Create status message
 	message := "transaction was found on-chain by " + chainstate.ProviderBroadcastClient
